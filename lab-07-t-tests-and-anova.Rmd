@@ -12,7 +12,7 @@ output:
     code_folding: hide
     df_print: paged
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
@@ -63,19 +63,19 @@ By the end of this lab, you should be able to:
 
 ## Load and inspect
 
-```{r load_data, echo=TRUE, eval=FALSE}
+```{r load_data, echo=TRUE, eval=TRUE}
 # GOAL: Read the dataset and keep 2022–2023.
 
 df <- read_csv("data/us-ams-simple.csv", na = c("-9999")) %>%
   clean_names() %>%
-  filter(year_local %in% c(___, ___))
+  filter(year_local %in% c(2022, 2023))
 
 glimpse(df)
 ```
 
 ## Derive time columns if needed
 
-```{r derive_time, echo=TRUE, eval=FALSE}
+```{r derive_time, echo=TRUE, eval=TRUE}
 # GOAL: Create date / month columns if they do not already exist.
 
 df <- df %>%
@@ -101,13 +101,13 @@ Examples:
 - `le`
 - `fc`
 
-```{r choose_one_sample, echo=TRUE, eval=FALSE}
-target_year <- ___
-target_var  <- "___"
+```{r choose_one_sample, echo=TRUE, eval=TRUE}
+target_year <- 2023
+target_var  <- "swc"
 
 sample_data <- df %>%
   filter(year_local == target_year) %>% 
-  slice_sample(n = ___)
+  slice_sample(n = 100)
 
 x <- sample_data[[target_var]]
 
@@ -115,7 +115,7 @@ mean(x, na.rm = TRUE); sd(x, na.rm = TRUE); length(x)
 ```
 
 > What variable and day did you choose, and why?
-
+I chose soil water content in 2023 because im interested in how the values change throughout the year.
 ---
 
 ## 2) State a null hypothesis
@@ -128,9 +128,9 @@ Examples:
 
 Fill in:
 
-> $H_0$: `___`
+> $H_0$: `The mean Temperature on January 1st is 35.5714%`
 
-> $H_A$: `___`
+> $H_A$: `The mean Temperature on January 1st is higher than 35.5714%`
 
 ---
 
@@ -140,8 +140,8 @@ Use:
 
 $t = (\bar{x} - \mu_0) / (s / \sqrt{n})$
 
-```{r one_sample_manual, echo=TRUE, eval=FALSE}
-mu0 <- ___
+```{r one_sample_manual, echo=TRUE, eval=TRUE}
+mu0 <- 35.5714
 
 xbar <- mean(x, na.rm = TRUE)
 s <- sd(x, na.rm = TRUE)
@@ -155,8 +155,8 @@ t_stat
 
 ## 4) Compute the p-value and degrees of freedom
 
-```{r one_sample_pvalue, echo=TRUE, eval=FALSE}
-df_t <- ___
+```{r one_sample_pvalue, echo=TRUE, eval=TRUE}
+df_t <- 98
 
 p_value <- 2 * pt(-abs(t_stat), df = df_t)
 
@@ -172,16 +172,17 @@ tibble(
 
 > What does the p-value suggest about your null hypothesis?
 
+The extremely high p-value suggests that the null hypothesis is true.
 ---
 
 ## 5) Compare with `t.test()`
 
-```{r one_sample_ttest, echo=TRUE, eval=FALSE}
+```{r one_sample_ttest, echo=TRUE, eval=TRUE}
 t.test(x, mu = mu0)
 ```
 
 > Does the `t.test()` output agree with your manual calculation? If not, why might that be?
-
+Yes, the t.test being very low (t = 8.75e-07) shows that there is little-to-no difference between mu0 (35.714) and the actual sample mean (35.714). This is obviously accurate because both the null hypothesis and the actual sample mean are the same number.
 ---
 
 # Part II — Two-sample t-test
@@ -192,13 +193,13 @@ Choose:
 - the **same variable**
 - two different **day ranges in 2023**
 
-```{r choose_two_sample, echo=TRUE, eval=FALSE}
+```{r choose_two_sample, echo=TRUE, eval=TRUE}
 x1 <- df %>%
-  filter(year_local == 2023, doy > ___ & doy < ___) %>%
+  filter(year_local == 2023, doy > 30 & doy < 40) %>%
   pull(target_var)
 
 x2 <- df %>%
-  filter(year_local == 2023, doy > ___ & doy < ___) %>%
+  filter(year_local == 2023, doy > 210 & doy < 220) %>%
   pull(target_var)
 
 mean(x1, na.rm = TRUE); sd(x1, na.rm = TRUE); length(x1)
@@ -206,12 +207,12 @@ mean(x2, na.rm = TRUE); sd(x2, na.rm = TRUE); length(x2)
 ```
 
 > Why did you choose these two days?
-
+I chose the 33-34 day of the year because it represents February 2nd which is the peak of winter. I chose the second day of the year to be 219-220 because it represents August 7th which is teh peak of summer. I hypothesize that these two days have very contrasting swc's.
 ---
 
 ## 7) Summarize the difference in means
 
-```{r two_sample_summary, echo=TRUE, eval=FALSE}
+```{r two_sample_summary, echo=TRUE, eval=TRUE}
 xbar1 <- mean(x1, na.rm = TRUE)
 xbar2 <- mean(x2, na.rm = TRUE)
 
@@ -234,7 +235,7 @@ tibble(
 
 ## 8) Compute the two-sample t-statistic manually (Welch)
 
-```{r two_sample_manual, echo=TRUE, eval=FALSE}
+```{r two_sample_manual, echo=TRUE, eval=TRUE}
 se_diff <- sqrt((s1^2 / n1) + (s2^2 / n2))
 
 t_stat <- mean_diff / se_diff
@@ -254,29 +255,30 @@ tibble(
 ```
 
 > What does the sign of `mean_diff` mean? What does the p-value mean?
-
+*Mean_diff is defined as the mean difference between the percent swc averages on February 2(ish) and August 7th(ish). The p-value is defined as the probability of seeing a result as significant as the result found comparing Feb.2 and Aug.7th when comparing to the null hypothesis being true (that they should be the same).*
 ---
 
 ## 9) Compare with `t.test()`
 
-```{r two_sample_ttest, echo=TRUE, eval=FALSE}
+```{r two_sample_ttest, echo=TRUE, eval=TRUE}
 t.test(x1, x2)
 ```
 
 > Does the automated t-test agree with your manual result?
-
+*Yes, the automated t-test being high shows that the means between Feb.2(ish) and Aug.7th(ish) are pretty different, accounting for that the variability of each mean on those given days is so minimal.*
 ---
 
 ## 10) Visualize the two groups
 
-```{r two_sample_plot, echo=TRUE, eval=FALSE}
+```{r two_sample_plot, echo=TRUE, eval=TRUE}
 plot_df <- bind_rows(
-  tibble(group = paste0("DOY_", day_range1), value = x1),
-  tibble(group = paste0("DOY_", day_range2), value = x2)
+  tibble(group = "Peak Winter (Jan30-Feb9)", value = x1),
+  tibble(group = "Strong Summer (July29-Aug8)", value = x2)
 )
 
 ggplot(plot_df, aes(x = group, y = value, fill = group)) +
   geom_boxplot(alpha = 0.8) +
+  ylim(20, 40) +
   theme_classic(base_size = 18) +
   labs(
     x = NULL,
