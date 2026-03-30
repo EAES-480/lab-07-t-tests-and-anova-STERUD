@@ -115,7 +115,8 @@ mean(x, na.rm = TRUE); sd(x, na.rm = TRUE); length(x)
 ```
 
 > What variable and day did you choose, and why?
-I chose soil water content in 2023 because im interested in how the values change throughout the year.
+>**I chose soil water content in 2023 because im interested in how the values change throughout the year.**
+
 ---
 
 ## 2) State a null hypothesis
@@ -172,7 +173,7 @@ tibble(
 
 > What does the p-value suggest about your null hypothesis?
 
-The extremely high p-value suggests that the null hypothesis is true.
+>**The extremely high p-value suggests that the null hypothesis is true.**
 ---
 
 ## 5) Compare with `t.test()`
@@ -182,7 +183,8 @@ t.test(x, mu = mu0)
 ```
 
 > Does the `t.test()` output agree with your manual calculation? If not, why might that be?
-Yes, the t.test being very low (t = 8.75e-07) shows that there is little-to-no difference between mu0 (35.714) and the actual sample mean (35.714). This is obviously accurate because both the null hypothesis and the actual sample mean are the same number.
+>**Yes, the t.test p-value being very high shows that there is very little difference between mu0 (35.7) and the actual sample mean (35.7). This is obviously accurate because both the null hypothesis and the actual sample mean are the same number.**
+
 ---
 
 # Part II — Two-sample t-test
@@ -207,7 +209,8 @@ mean(x2, na.rm = TRUE); sd(x2, na.rm = TRUE); length(x2)
 ```
 
 > Why did you choose these two days?
-I chose the 33-34 day of the year because it represents February 2nd which is the peak of winter. I chose the second day of the year to be 219-220 because it represents August 7th which is teh peak of summer. I hypothesize that these two days have very contrasting swc's.
+>**I chose days 30-40 because they represent the days around February 2nd which is the peak of winter. I chose the second part of the year to be 219-220 because they represent August 7th which is the peak of summer. I hypothesize that these two days have very contrasting swc's.**
+
 ---
 
 ## 7) Summarize the difference in means
@@ -255,7 +258,8 @@ tibble(
 ```
 
 > What does the sign of `mean_diff` mean? What does the p-value mean?
-*Mean_diff is defined as the mean difference between the percent swc averages on February 2(ish) and August 7th(ish). The p-value is defined as the probability of seeing a result as significant as the result found comparing Feb.2 and Aug.7th when comparing to the null hypothesis being true (that they should be the same).*
+**Mean_diff is defined as the mean difference between the percent swc averages on February 2(ish) and August 7th(ish). The p-value is defined as the probability of seeing a result as significant as the result found comparing Feb.2 and Aug.7th when comparing to the null hypothesis being true (that they should be the same).**
+
 ---
 
 ## 9) Compare with `t.test()`
@@ -265,7 +269,8 @@ t.test(x1, x2)
 ```
 
 > Does the automated t-test agree with your manual result?
-*Yes, the automated t-test being high shows that the means between Feb.2(ish) and Aug.7th(ish) are pretty different, accounting for that the variability of each mean on those given days is so minimal.*
+**Yes, the automated t-test being high shows that the means between Feb.2(ish) and Aug.7th(ish) are pretty different, accounting for that the variability of each mean on those given days is so minimal.**
+
 ---
 
 ## 10) Visualize the two groups
@@ -276,18 +281,23 @@ plot_df <- bind_rows(
   tibble(group = "Strong Summer (July29-Aug8)", value = x2)
 )
 
-ggplot(plot_df, aes(x = group, y = value, fill = group)) +
+ggplot(plot_df, aes(x = group, y = value, fill = group, width = 0.75)) +
   geom_boxplot(alpha = 0.8) +
   ylim(20, 40) +
   theme_classic(base_size = 18) +
+  theme(
+    axis.text.x = element_text(size = 9, angle = 8, h = 1),
+    text = element_text(family = "Times New Roman")
+  )
   labs(
     x = NULL,
     y = target_var,
-    title = "Two-sample comparison"
+    title = "Two-sample t-test Comparison"
   )
 ```
 
 > Does the plot match your statistical conclusion?
+>**Yes, the plot matches the statistical conclusion that the means between Summer and Winter are different. The mean, showcased by the solid black line inside of each box are clearly located at different values, winter having a higher swc than summer. Additionally, the sizes of the boxes themselves, which display the variability of values within each group's precise day range do not overlap.**
 
 ---
 
@@ -297,27 +307,32 @@ ggplot(plot_df, aes(x = group, y = value, fill = group)) +
 
 Choose one DOY and compare **2022 vs 2023** for the same variable.
 
-```{r paired_setup, echo=TRUE, eval=FALSE}
+```{r paired_setup, echo=TRUE, eval=TRUE}
 x1 <- df %>%
-  filter(year_local == 2022, doy > ___ & doy < ___) %>%
+  filter(year_local == 2022, doy > 210 & doy < 220) %>%
   arrange(date) %>%
   pull(target_var)
 
 x2 <- df %>%
-  filter(year_local == 2023, doy > ___ & doy < ___) %>%
+  filter(year_local == 2023, doy > 210 & doy < 220) %>%
   arrange(date) %>%
   pull(target_var)
+
+n <- min(length(x1), length(x2))
+x1 <- x1[1:n]
+x2 <- x2[1:n]
 
 length(x1); length(x2)
 ```
 
 > Why is this a paired comparison rather than an independent two-sample comparison?
+>**This is a paired comparison because it compares the same doy values between different years. In this case, I chose days 210-220 which is during very strong summer.**
 
 ---
 
 ## 12) Compute paired differences manually
 
-```{r paired_manual, echo=TRUE, eval=FALSE}
+```{r paired_manual, echo=TRUE, eval=TRUE}
 d <- x1 - x2
 
 dbar <- mean(d, na.rm = TRUE)
@@ -337,16 +352,18 @@ tibble(
 ```
 
 > What does the sign of `dbar` mean?
+>**'dbar' means the difference between doy pairs from 2022 to 2023. A negative 'dbar' means that the average change in values from days 210-220 DECREASES from 2022 to 2023. In this case, the change is by -11.6 units, or swc**
 
 ---
 
 ## 13) Compare with `t.test(..., paired = TRUE)`
 
-```{r paired_ttest, echo=TRUE, eval=FALSE}
+```{r paired_ttest, echo=TRUE, eval=TRUE}
 t.test(x1, x2, paired = TRUE)
 ```
 
 > How does the paired t-test differ conceptually from the two-sample t-test?
+>**The paired t-test compares the same days between years, looking at how each day changes and then averaging those differences. The two-sample t-test compares all values in each year as separate groups, ignoring the day-to-day link, and tests whether the overall averages differ.**
 
 ---
 
@@ -360,13 +377,14 @@ Group `ta` into broad seasonal categories:
 - Winter
 - Other
 
-```{r make_groups_anova, echo=TRUE, eval=FALSE}
+```{r make_groups_anova, echo=TRUE, eval=TRUE}
 df_anova <- df %>%
   filter(!is.na(ta)) %>%
   mutate(
+    month_name = month(date, label = TRUE, abbr = FALSE),
     month_group = case_when(
-      month %in% c(___, ___, ___) ~ "Summer",
-      month %in% c(___, ___, ___) ~ "Winter",
+      month %in% c("Jun", "Jul", "Aug") ~ "Summer",
+      month %in% c("Dec", "Jan", "Feb") ~ "Winter",
       TRUE ~ "Other"
     )
   )
@@ -378,24 +396,26 @@ df_anova %>% count(month_group)
 
 ## 15) Visualize the groups
 
-```{r plot_anova_groups, echo=TRUE, eval=FALSE}
+```{r plot_anova_groups, echo=TRUE, eval=TRUE}
 ggplot(df_anova, aes(x = month_group, y = ta, fill = month_group)) +
-  geom_boxplot(alpha = 0.8) +
-  theme_classic(base_size = 18) +
+  geom_boxplot(alpha = 1) +
+  theme_classic(base_size = 16) +
+  theme(text = element_text(family = "Times New Roman")) +
   labs(
     x = NULL,
     y = "ta",
-    title = "Air temperature by seasonal group"
+    title = "Air temperature by Seasons"
   )
 ```
 
 > Do the groups look different enough that ANOVA might detect a difference?
+>**Yes, I think the groups look different enough that ANOVA will detect a difference because it doesn't look like the boxes will overlap.**
 
 ---
 
 ## 16) Compute ANOVA components manually
 
-```{r anova_manual_components, echo=TRUE, eval=FALSE}
+```{r anova_manual_components, echo=TRUE, eval=TRUE}
 grand_mean <- mean(df_anova$ta, na.rm = TRUE)
 
 group_stats <- df_anova %>%
@@ -437,17 +457,19 @@ tibble(
 ```
 
 > In your own words, what do `ss_between` and `ss_within` represent?
+>**SS_between represents the difference between each season's mean from the overall yearly mean, while 'ss_within' compares how much each value within the season differs from its seasonal average. Since the ss_between is higher than the ss_within, we can conclude that the difference between seasons is more relavant statistically than the difference in atmospheric temperature within each season.**
 
 ---
 
 ## 17) Compare with `aov()`
 
-```{r run_anova, echo=TRUE, eval=FALSE}
+```{r run_anova, echo=TRUE, eval=TRUE}
 model <- aov(ta ~ month_group, data = df_anova)
 summary(model)
 ```
 
 > What does the ANOVA p-value tell you? Does it tell you which groups differ?
+>**The small ANOVA p-value of <2e-16 tells me that the difference between seasons is significant. The difference between summer, between winter, and between spring/fall are very different, even when accounting for sd, and it is not due to random chance.**
 
 ---
 
@@ -460,7 +482,7 @@ Answer in **5–7 sentences**:
 - How is ANOVA a generalization of the t-test?
 - What stayed the same across all these tests?
 
-> *Write your answer here.*
+> **A one-sample t-test compares a sample dataset's mean to a concise mean value, while a two-sample t-test compares two dataset's means with each other. A paired t-test is special because it uses the same chronological or linked values between two different groups, and compares their differences on an average. We used paired t-test when comparing the same doy ranges between different years, and analyzing the differences between those days in an averaged value. ANOVA is a generalization of the t-test because it compares the means across more than 3+ groups, rather than just 2. Across all of the tests, you can analyze the differences between values both within the groups, and between the groups, and rule out whether those differences are due to random chance or not.**
 
 ---
 
