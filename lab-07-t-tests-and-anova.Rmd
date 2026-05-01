@@ -15,6 +15,8 @@ editor_options:
   chunk_output_type: inline
 ---
 
+GRADE GM: 9.75/10 - Good submission with detailed explanations and solid code execution. Nice effort on visualizations and reflection. Minor deductions for a one-sided hypothesis and a few small precision issues.
+
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(lubridate)
@@ -133,6 +135,8 @@ Fill in:
 
 > $H_A$: `The mean Temperature on January 1st is higher than 35.5714%`
 
+> GM: -0.25: Minor — Hypothesis is one-sided (“higher than”) without justification. Should be two-sided for standard t.test().
+
 ---
 
 ## 3) Compute the one-sample t-statistic manually
@@ -210,6 +214,8 @@ mean(x2, na.rm = TRUE); sd(x2, na.rm = TRUE); length(x2)
 
 > Why did you choose these two days?
 >**I chose days 30-40 because they represent the days around February 2nd which is the peak of winter. I chose the second part of the year to be 219-220 because they represent August 7th which is the peak of summer. I hypothesize that these two days have very contrasting swc's.**
+
+> GM: Good answer — Nice seasonal peak comparison.
 
 ---
 
@@ -298,6 +304,8 @@ ggplot(plot_df, aes(x = group, y = value, fill = group, width = 0.75)) +
 
 > Does the plot match your statistical conclusion?
 >**Yes, the plot matches the statistical conclusion that the means between Summer and Winter are different. The mean, showcased by the solid black line inside of each box are clearly located at different values, winter having a higher swc than summer. Additionally, the sizes of the boxes themselves, which display the variability of values within each group's precise day range do not overlap.**
+
+> GM: Excellent — Strong visual interpretation and clear match to stats.
 
 ---
 
@@ -483,6 +491,8 @@ Answer in **5–7 sentences**:
 - What stayed the same across all these tests?
 
 > **A one-sample t-test compares a sample dataset's mean to a concise mean value, while a two-sample t-test compares two dataset's means with each other. A paired t-test is special because it uses the same chronological or linked values between two different groups, and compares their differences on an average. We used paired t-test when comparing the same doy ranges between different years, and analyzing the differences between those days in an averaged value. ANOVA is a generalization of the t-test because it compares the means across more than 3+ groups, rather than just 2. Across all of the tests, you can analyze the differences between values both within the groups, and between the groups, and rule out whether those differences are due to random chance or not.**
+
+> GM: Excellent — Clear and accurate summary of differences and common logic.
 
 ---
 
